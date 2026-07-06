@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Valentina Parera - Fotografía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Josefin+Sans:wght@200;300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script type="module" src="public.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <h1 class="brand">Valentina <em>Parera</em></h1>
+    <p class="subtitle">Fotografía · Naturaleza · Arquitectura · Retratos</p>
+  </header>
+
+  <nav class="category-nav" id="categoryNav" aria-label="Categorias"></nav>
+
+  <main class="gallery" id="gallery" aria-live="polite">
+    <p class="status">Cargando galeria</p>
+  </main>
+
+  <section class="lightbox" id="lightbox" aria-modal="true" aria-label="Visor de foto">
+    <button class="icon-button lightbox-close" id="closeLightbox" aria-label="Cerrar">&times;</button>
+    <button class="icon-button lightbox-nav lightbox-prev" id="prevPhoto" aria-label="Foto anterior">&#8249;</button>
+    <img id="lightboxImage" src="" alt="">
+    <p class="lightbox-label" id="lightboxLabel"></p>
+    <button class="icon-button lightbox-nav lightbox-next" id="nextPhoto" aria-label="Foto siguiente">&#8250;</button>
+  </section>
+
+  <footer class="site-footer">
+    &copy; 2026 Valentina Parera - Todos los derechos reservados
+  </footer>
+</body>
+</html>

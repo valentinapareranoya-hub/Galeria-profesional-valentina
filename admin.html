@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administrar galeria - Valentina Parera</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Josefin+Sans:wght@200;300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script type="module" src="admin.js"></script>
+</head>
+<body>
+  <main class="login-card panel" id="loginView">
+    <h1 class="admin-brand">Valentina</h1>
+    <p>Ingresar al panel para editar fotos y categorias.</p>
+    <form id="loginForm" class="field">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" autocomplete="email" required>
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <button class="primary-button" type="submit">Ingresar</button>
+    </form>
+    <p class="status" id="loginStatus"></p>
+  </main>
+
+  <section class="admin-shell hidden" id="adminView">
+    <aside class="admin-sidebar">
+      <h1 class="admin-brand">Valentina <em>Parera</em></h1>
+      <p>Panel simple para mantener actualizada la galeria publica.</p>
+      <a class="ghost-button" href="index.html">Ver galeria</a>
+    </aside>
+
+    <main class="admin-main">
+      <div class="toolbar">
+        <div>
+          <h2>Editor</h2>
+          <p id="adminStatus" class="status"></p>
+        </div>
+        <button class="secondary-button" id="logoutButton" type="button">Salir</button>
+      </div>
+
+      <section class="panel">
+        <h3>Subir foto</h3>
+        <form id="photoForm" class="form-grid">
+          <div class="field">
+            <label for="photoFile">Archivo</label>
+            <input id="photoFile" type="file" accept="image/*" required>
+          </div>
+          <div class="field">
+            <label for="photoTitle">Titulo</label>
+            <input id="photoTitle" type="text" placeholder="Opcional">
+          </div>
+          <div class="field">
+            <label for="photoCategory">Categoria</label>
+            <select id="photoCategory" required></select>
+          </div>
+          <div class="field">
+            <label for="photoOrder">Orden</label>
+            <input id="photoOrder" type="number" value="0">
+          </div>
+          <button class="primary-button" type="submit">Subir</button>
+        </form>
+      </section>
+
+      <div class="grid-two">
+        <section class="panel">
+          <h3>Categorias</h3>
+          <form id="categoryForm" class="form-grid">
+            <div class="field">
+              <label for="categoryName">Nueva categoria</label>
+              <input id="categoryName" type="text" required>
+            </div>
+            <div class="field">
+              <label for="categoryOrder">Orden</label>
+              <input id="categoryOrder" type="number" value="0">
+            </div>
+            <button class="primary-button" type="submit">Agregar</button>
+          </form>
+          <div class="category-list" id="categoryList"></div>
+        </section>
+
+        <section class="panel">
+          <h3>Fotos publicadas</h3>
+          <div class="photo-admin-list" id="photoList"></div>
+        </section>
+      </div>
+    </main>
+  </section>
+</body>
+</html>
+
