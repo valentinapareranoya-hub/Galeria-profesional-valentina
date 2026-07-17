@@ -15,6 +15,20 @@ let categories = [];
 let visiblePhotos = [];
 let currentIndex = 0;
 
+function galleryImageUrl(url) {
+  if (!url) return "";
+
+  // Las fotos heredadas de Drive permiten pedir una miniatura acorde a la pantalla.
+  if (url.includes("drive.google.com/thumbnail")) {
+    const width = window.matchMedia("(max-width: 600px)").matches ? 900 : 1200;
+    const imageUrl = new URL(url);
+    imageUrl.searchParams.set("sz", `w${width}`);
+    return imageUrl.toString();
+  }
+
+  return url;
+}
+
 function categoryName(photo) {
   return photo.categories?.name || "Sin categoria";
 }
@@ -56,9 +70,17 @@ function renderGallery() {
     button.addEventListener("click", () => openLightbox(index));
 
     const img = document.createElement("img");
-    img.src = photo.public_url;
+    img.src = galleryImageUrl(photo.public_url);
     img.alt = photo.alt || photo.title || categoryName(photo);
     img.loading = "lazy";
+    img.decoding = "async";
+    img.width = 900;
+    img.height = 1125;
+
+    if (index === 0) {
+      img.loading = "eager";
+      img.fetchPriority = "high";
+    }
 
     const overlay = document.createElement("span");
     overlay.className = "photo-overlay";
@@ -130,4 +152,3 @@ document.addEventListener("keydown", (event) => {
 });
 
 init();
-

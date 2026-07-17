@@ -20,8 +20,59 @@ const categoryList = document.querySelector("#categoryList");
 let categories = [];
 let photos = [];
 
+function createPhotoId() {
+  if (window.crypto?.randomUUID) {
+    return window.crypto.randomUUID();
+  }
+
+  if (window.crypto?.getRandomValues) {
+    const bytes = new Uint8Array(16);
+    window.crypto.getRandomValues(bytes);
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+
+    return [...bytes]
+      .map((byte, index) => {
+        const value = byte.toString(16).padStart(2, "0");
+        return [4, 6, 8, 10].includes(index) ? `-${value}` : value;
+      })
+      .join("");
+  }
+
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
+}
+
 function setStatus(message) {
   adminStatus.textContent = message || "";
+}
+
+async function optimizePhoto(file) {
+  if (!file.type.startsWith("image/") || file.type === "image/gif") return file;
+
+  const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+  const maxSide = 2200;
+  const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+
+  // Evita recomprimir archivos que ya tienen un tamaño razonable.
+  if (scale === 1 && file.size < 1_500_000) {
+    bitmap.close();
+    return file;
+  }
+
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  const context = canvas.getContext("2d");
+  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+
+  const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/webp", 0.84));
+  if (!blob) return file;
+
+  return new File([blob], `${file.name.replace(/\.[^.]+$/, "")}.webp`, {
+    type: "image/webp",
+    lastModified: Date.now()
+  });
 }
 
 function showAdmin(isLoggedIn) {
@@ -121,12 +172,21 @@ async function uploadPhoto(event) {
   const file = photoFile.files[0];
   if (!file) return;
 
+  setStatus("Optimizando foto...");
+  let optimizedFile = file;
+  try {
+    optimizedFile = await optimizePhoto(file);
+  } catch (error) {
+    // Algunos navegadores antiguos no pueden convertir imágenes; se sube el original.
+    console.warn("No se pudo optimizar la foto antes de subirla.", error);
+  }
   setStatus("Subiendo foto...");
-  const extension = file.name.split(".").pop() || "jpg";
-  const path = `${Date.now()}-${crypto.randomUUID()}.${extension}`;
+  const extension = optimizedFile.name.split(".").pop() || "jpg";
+  const path = `${Date.now()}-${createPhotoId()}.${extension}`;
 
-  const { error: uploadError } = await supabase.storage.from(bucketName).upload(path, file, {
-    cacheControl: "3600",
+  const { error: uploadError } = await supabase.storage.from(bucketName).upload(path, optimizedFile, {
+    cacheControl: "31536000",
+    contentType: optimizedFile.type,
     upsert: false
   });
   if (uploadError) throw uploadError;
